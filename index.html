@@ -1,0 +1,633 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Arqueolab | Scorpions FLL</title>
+    <!-- Carregando Tailwind CSS e Ícones -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <!--
+        =========================================================
+        [ 1. BLOCO DE ESTILOS CSS (Substitui o style.css) ]
+        =========================================================
+    -->
+    <style>
+        /* Configuração de Fonte Global e Estilos Customizados */
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap');
+        
+        /* NOVA PALETA DE CORES TERROSAS E DE PRESERVAÇÃO */
+        :root {
+            --color-primary: #B85C38; /* Terracota Profundo (Ação) */
+            --color-secondary: #376E6F; /* Verde-Petróleo Muted (Destaque/Ícone) */
+            --color-background: #F7F4EF; /* Fundo Creme Suave */
+            --color-text: #3D3631; /* Marrom Escuro Quente */
+            --color-card: #FFFFFF;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--color-background);
+            color: var(--color-text);
+        }
+
+        /* Botão Primário (Terracota) */
+        .btn-primary {
+            background-color: var(--color-primary);
+            transition: background-color 0.3s;
+        }
+        .btn-primary:hover {
+            background-color: #A04A2A; /* Um tom mais escuro de terracota */
+        }
+
+        /* Abas Ativas (Terracota) */
+        .tab-active {
+            border-bottom: 3px solid var(--color-primary);
+            color: var(--color-primary);
+            font-weight: 600;
+        }
+
+        /* Estilo para o container da logo (já adaptado para a imagem) */
+        .logo-container {
+            height: 40px; 
+            display: flex;
+            align-items: center;
+        }
+        .logo-container img {
+            max-height: 100%;
+            width: auto;
+        }
+        
+        /* Estilo para links de navegação */
+        .nav-link {
+            color: var(--color-text); /* Cor do texto padrão */
+        }
+        .nav-link:hover {
+            color: var(--color-primary); /* Destaque Primário no hover */
+        }
+
+        /* Estilo da caixa de resposta da IA */
+        .ai-response-box {
+            background-color: #ECE5DE; /* Tom claro de creme/cinza */
+            border-left: 4px solid var(--color-primary);
+            min-height: 100px;
+        }
+
+        /* Animação para o loading da IA */
+        @keyframes bounce {
+          0%, 100% { transform: translateY(-50%); }
+          50% { transform: translateY(0); }
+        }
+
+        .loading-dots span {
+          animation: bounce 0.6s infinite alternate;
+        }
+        .loading-dots span:nth-child(2) {
+          animation-delay: 0.15s;
+        }
+        .loading-dots span:nth-child(3) {
+          animation-delay: 0.3s;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Cabeçalho Fixo e Navegação: Layout L | C | R -->
+    <header class="sticky top-0 z-50 bg-[#D0C2A8]  shadow-md">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex justify-between items-center py-4">
+            
+            <!-- 1. Logo Arqueolab (Esquerda) -->
+            <div class="logo-container">
+                <img src="img/logoArqueoLB.png" 
+                    alt="Logo Arqueolab - Scorpions" 
+                    class="h-full w-auto"
+                    onerror="this.onerror=null; this.src='https://placehold.co/100x40/B85C38/FFFFFF?text=Arqueolab';"
+                >
+            </div>
+
+            <!-- 2. Navegação Desktop (Centro) -->
+            <nav class="hidden md:flex space-x-6 font-medium">
+                <a href="#guia" class="nav-link text-gray-700">Guia Rápido</a>
+                <a href="#ia-assistente" class="nav-link text-gray-700">Assistente IA</a>
+                <a href="#preservacao" class="nav-link text-gray-700">Preservação</a>
+                <a href="#catalogo" class="nav-link text-gray-700">Catálogo</a>
+                <a href="#contatos" class="nav-link text-gray-700">Contatos</a>
+            </nav>
+
+            <!-- 3. Contêiner da Direita: Logo Scorpions + Menu Mobile -->
+            <div class="flex items-center space-x-2 sm:space-x-4">
+                <!-- Logo Scorpions (Direita - Fica visível em todas as telas para manter o equilíbrio) -->
+                <div class="logo-container">
+                    <img src="img/escudoScorpions.png" 
+                        alt="Escudo da equipe Scorpions" 
+                        class="h-full w-auto"
+                        onerror="this.onerror=null; this.src='https://placehold.co/40x40/3D3631/FFFFFF?text=FLL';"
+                    >
+                </div>
+                
+                <!-- Menu Mobile (Exibe apenas no mobile) -->
+                <button class="md:hidden p-2 rounded-lg hover:bg-gray-100 transition duration-150">
+                    <i data-lucide="menu" class="w-6 h-6 text-gray-600"></i>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 space-y-20">
+
+        <!-- Seção 1: Introdução e Intuito do Site -->
+        <section id="introducao" class="text-center">
+            <h2 class="text-4xl sm:text-5xl font-bold mb-4" style="color: var(--color-text);">Você Encontrou um Artefato?</h2>
+            <p class="text-xl max-w-3xl mx-auto" style="color: var(--color-text);">
+                O <span class="font-semibold" style="color: var(--color-primary);">Arqueolab</span> é seu ponto de partida. Nosso intuito é auxiliar você a preservar, documentar e conectar-se com arqueólogos próximos para a entrega segura de artefatos, além de esclarecer dúvidas sobre arqueologia.
+            </p>
+            <a href="#guia" class="mt-6 inline-flex items-center px-8 py-3 border border-transparent text-base font-medium rounded-full shadow-lg text-white btn-primary transition duration-300 transform hover:scale-105">
+                <i data-lucide="map" class="w-5 h-5 mr-2"></i> Iniciar Guia Rápido de Ação
+            </a>
+        </section>
+
+        <!-- Seção 2: Guia Rápido de Ação -->
+        <section id="guia">
+            <div class="bg-white p-6 sm:p-10 rounded-xl shadow-2xl">
+                <h2 class="text-3xl font-bold mb-8 flex items-center" style="color: var(--color-text);">
+                    <i data-lucide="book-open-text" class="w-7 h-7 mr-3" style="color: var(--color-secondary);"></i> Guia Rápido de Ação
+                </h2>
+                <p class="text-lg mb-6" style="color: var(--color-text);">Selecione o material encontrado para ver as instruções críticas de preservação e manuseio:</p>
+
+                <!-- Filtros (Tabs) -->
+                <div class="flex flex-wrap border-b border-gray-200 mb-8">
+                    <!-- Uso de cor de texto padrão aqui, que se ajusta automaticamente ao var(--color-text) -->
+                    <button data-material="cerâmica" class="guide-button p-3 sm:px-6 text-sm sm:text-base text-gray-600 hover:bg-gray-50 transition duration-150 rounded-t-lg">
+                        Cerâmica
+                    </button>
+                    <button data-material="osso" class="guide-button p-3 sm:px-6 text-sm sm:text-base text-gray-600 hover:bg-gray-50 transition duration-150 rounded-t-lg">
+                        Osso
+                    </button>
+                    <button data-material="couro" class="guide-button p-3 sm:px-6 text-sm sm:text-base text-gray-600 hover:bg-gray-50 transition duration-150 rounded-t-lg">
+                        Couro / Orgânico
+                    </button>
+                </div>
+
+                <!-- Conteúdo do Guia (Renderizado via JS) -->
+                <div id="guide-content" class="min-h-[350px]" style="color: var(--color-text);">
+                    <!-- Conteúdo será injetado aqui pelo JavaScript -->
+                </div>
+            </div>
+        </section>
+
+        <!-- Seção 3: Assistente de IA e Perguntas Frequentes (FAQ) -->
+        <section id="ia-assistente">
+            <div class="bg-white p-6 sm:p-10 rounded-xl shadow-2xl">
+                <h2 class="text-3xl font-bold mb-4" style="color: var(--color-text);">
+                    <i data-lucide="sparkles" class="w-7 h-7 mr-3" style="color: var(--color-secondary);"></i> Assistente de IA: Arqueolab Bot
+                </h2>
+                <p class="text-lg mb-6" style="color: var(--color-text);">
+                    Nossa IA é treinada para responder dúvidas, fornecer traduções automáticas e classificar artefatos (em laboratório). Use o campo abaixo para tirar suas dúvidas.
+                </p>
+
+                <!-- Área de Interação com a IA -->
+                <div class="space-y-6">
+                    <!-- Formulário de Input -->
+                    <form id="ai-form" class="flex flex-col sm:flex-row space-y-4 sm:space-y-0 sm:space-x-4">
+                        <input type="text" id="ai-input" placeholder="Ex: 'O que é um artefato lítico?' ou 'Traduza preservation para português'" class="flex-grow p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-400 focus:border-gray-400 transition duration-150" required>
+                        <button type="submit" class="w-full sm:w-auto px-6 py-3 rounded-lg text-white font-semibold btn-primary">
+                            Perguntar
+                        </button>
+                    </form>
+
+                    <!-- Indicador de Carregamento -->
+                    <div id="ai-loading" class="hidden text-center text-gray-500 py-4">
+                        <div class="loading-dots flex justify-center space-x-1">
+                            <span class="w-2 h-2 rounded-full animate-bounce" style="background-color: var(--color-primary);"></span>
+                            <span class="w-2 h-2 rounded-full animate-bounce" style="background-color: var(--color-primary);"></span>
+                            <span class="w-2 h-2 rounded-full animate-bounce" style="background-color: var(--color-primary);"></span>
+                        </div>
+                        <p class="mt-2">Aguarde, consultando a base de dados...</p>
+                    </div>
+
+                    <!-- Caixa de Resposta da IA -->
+                    <div id="ai-response" class="ai-response-box p-4 rounded-lg transition duration-300">
+                        <p class="text-gray-500 italic">Sua resposta da Arqueolab AI aparecerá aqui. Experimente perguntar algo!</p>
+                    </div>
+                </div>
+
+                <!-- Perguntas Frequentes Comuns -->
+                <div class="mt-10 pt-6 border-t border-gray-200">
+                    <h3 class="text-xl font-bold mb-4" style="color: var(--color-text);">Perguntas Frequentes</h3>
+                    <div class="space-y-3" style="color: var(--color-text);">
+                        <!-- Mudando de bg-gray-50 para uma cor que harmonize com o fundo creme -->
+                        <div class="p-3 rounded-lg" style="background-color: #FAF8F5;">
+                            <strong style="color: var(--color-text);">1. Devo limpar o artefato que encontrei?</strong><br>
+                            Não. A limpeza deve ser feita apenas por profissionais. A água ou produtos químicos podem destruir informações valiosas e fragilizar o material.
+                        </div>
+                        <div class="p-3 rounded-lg" style="background-color: #FAF8F5;">
+                            <strong style="color: var(--color-text);">2. O que é IPHAN?</strong><br>
+                            O Instituto do Patrimônio Histórico e Artístico Nacional é a autarquia federal responsável por preservar, fiscalizar e promover os bens culturais do Brasil.
+                        </div>
+                        <div class="p-3 rounded-lg" style="background-color: #FAF8F5;">
+                            <strong style="color: var(--color-text);">3. Qual a importância da cerâmica arqueológica?</strong><br>
+                            A cerâmica é crucial porque, ao contrário de materiais orgânicos, se preserva por milhares de anos, revelando técnicas de produção, hábitos alimentares e rituais de civilizações antigas.
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Seção 4: Preservação do Patrimônio Arqueológico e Estudos -->
+        <section id="preservacao" class="grid grid-cols-1 lg:grid-cols-2 gap-10">
+            <!-- Coluna de Preservação -->
+            <div class="bg-white p-6 sm:p-8 rounded-xl shadow-2xl">
+                <h2 class="text-3xl font-bold mb-4" style="color: var(--color-text);">
+                    <i data-lucide="shield-check" class="w-7 h-7 mr-3" style="color: var(--color-secondary);"></i> Preservação do Patrimônio
+                </h2>
+                <p class="text-lg mb-4" style="color: var(--color-text);">
+                    Este é o cerne do <span class="font-semibold" style="color: var(--color-primary);">Arqueolab</span>. Preservar o patrimônio arqueológico é uma responsabilidade de todos. Patrimônios históricos são essenciais para entender a nossa origem.
+                </p>
+                <h3 class="text-xl font-bold mt-6 mb-2" style="color: var(--color-primary);">Principais Ameaças à Degradação:</h3>
+                <ul class="list-disc list-inside ml-4 space-y-2" style="color: var(--color-text);">
+                    <li><strong>Ação Humana Inconsciente:</strong> Construções, agricultura e, principalmente, a limpeza ou "restauração" amadora.</li>
+                    <li><strong>Variação Climática:</strong> Mudanças bruscas de umidade e temperatura causam rachaduras e promovem o crescimento de micro-organismos (mofo).</li>
+                    <li><strong>Erosão:</strong> Ação do vento e da água em artefatos expostos.</li>
+                    <li><strong>Tráfico de Bens:</strong> Ações criminosas que roubam e destroem sítios arqueológicos.</li>
+                </ul>
+            </div>
+
+            <!-- Coluna de Estudos Utilizados -->
+            <div class="bg-white p-6 sm:p-8 rounded-xl shadow-2xl">
+                <h2 class="text-3xl font-bold mb-4" style="color: var(--color-text);">
+                    <i data-lucide="flask-round" class="w-7 h-7 mr-3" style="color: var(--color-secondary);"></i> Estudos Utilizados (Cerâmica)
+                </h2>
+                <p class="text-lg" style="color: var(--color-text);">
+                    Artefatos arqueológicos de cerâmica são objetos feitos de barro queimado que fornecem informações cruciais sobre civilizações antigas, como tecnologias de produção, alimentação, rituais e organização social. Eles são importantes em regiões onde materiais orgânicos não se preservam.
+                </p>
+                <h3 class="text-xl font-bold mt-6 mb-2" style="color: var(--color-primary);">Métodos de Análise:</h3>
+                <ul class="list-disc list-inside ml-4 space-y-2" style="color: var(--color-text);">
+                    <li><strong>Análise e Reconstituição:</strong> Arqueólogos estudam a cerâmica para entender as técnicas de produção, identificar a origem das matérias-primas e inferir a função dos objetos através da análise de vestígios.</li>
+                    <li><strong>Análise de Cronologia:</strong> Peças padronizadas (como louças coloniais) funcionam como indicadores cronológicos, ajudando a datar a ocupação de um sítio.</li>
+                </ul>
+            </div>
+        </section>
+
+        <!-- Seção 5: Catálogos de Itens (Mockup) -->
+        <section id="catalogo">
+            <h2 class="text-3xl font-bold mb-8 text-center flex items-center justify-center" style="color: var(--color-text);">
+                <i data-lucide="layout-grid" class="w-7 h-7 mr-3" style="color: var(--color-secondary);"></i> Catálogos de Itens Encontrados
+            </h2>
+            <div id="catalog-container" class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <!-- Cards de Catálogo serão renderizados via JS -->
+            </div>
+        </section>
+
+        <!-- Seção 6: Contatos Oficiais -->
+        <section id="contatos">
+            <!-- Usando um tom mais escuro do nosso background -->
+            <div class="p-6 sm:p-10 rounded-xl shadow-inner text-center" style="background-color: #EDEAE5;">
+                <h2 class="text-3xl font-bold mb-4 flex items-center justify-center" style="color: var(--color-text);">
+                    <i data-lucide="contact" class="w-7 h-7 mr-3" style="color: var(--color-secondary);"></i> Contatos Oficiais
+                </h2>
+                <p class="text-xl max-w-2xl mx-auto mb-6" style="color: var(--color-text);">Em caso de descoberta de um artefato, o contato imediato com a autoridade responsável é essencial para a correta preservação.</p>
+
+                <div class="inline-block bg-white p-6 rounded-lg shadow-md" style="border-top: 4px solid var(--color-primary);">
+                    <h3 class="text-2xl font-bold mb-2" style="color: var(--color-primary);">IPHAN - Instituto do Patrimônio Histórico e Artístico Nacional</h3>
+                    <p class="text-lg" style="color: var(--color-text);"><strong>Facilita a comunicação com o público e a ação profissional.</strong></p>
+                    <div class="mt-4 space-y-2 text-left">
+                        <p class="flex items-center" style="color: var(--color-text);"><i data-lucide="phone" class="w-5 h-5 mr-2" style="color: var(--color-primary);"></i> (61) 2024-6000 (Central)</p>
+                        <p class="flex items-center" style="color: var(--color-text);"><i data-lucide="mail" class="w-5 h-5 mr-2" style="color: var(--color-primary);"></i> iphan@iphan.gov.br</p>
+                        <a href="http://portal.iphan.gov.br/" target="_blank" class="flex items-center hover:underline" style="color: var(--color-primary);"><i data-lucide="link" class="w-5 h-5 mr-2"></i> Site Oficial do IPHAN</a>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Rodapé -->
+    <footer class="mt-12 py-8" style="background-color: var(--color-text);">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center text-gray-400">
+            <p>&copy; 2025 Arqueolab | Projeto FLL - Equipe Scorpions.</p>
+            <p class="mt-2 text-sm">Desenvolvido com o intuito de auxiliar na preservação do patrimônio arqueológico brasileiro.</p>
+        </div>
+    </footer>
+
+    <!--
+        =========================================================
+        [ 2. BLOCO DE LÓGICA JAVASCRIPT (Substitui o script.js) ]
+        =========================================================
+    -->
+    <script>
+        // Variáveis globais para a API
+        const apiKey = "";
+        const apiUrlBase = "https://generativelanguage.googleapis.com/v1beta/models/";
+        const modelName = "gemini-2.5-flash-preview-09-2025";
+        const apiUrl = `${apiUrlBase}${modelName}:generateContent?key=${apiKey}`;
+
+        // Variável de estado para o Guia Rápido de Ação
+        let activeGuide = 'cerâmica';
+
+        // Dados de Catálogo (Mock Data)
+        const catalogItems = [
+            {
+                nome: "Vasilha Cerâmica Tupi-Guarani",
+                cultura: "Tupi-Guarani",
+                local: "Sítio Arqueológico do Litoral Sul, SP",
+                data: "c. 1500 d.C.",
+                descricao: "Fragmento de vasilha cerâmica utilitária com engobo vermelho. Apresenta técnica de modelagem em bobinas, comum no tronco linguístico Tupi.",
+                exposicao: "Museu de Arqueologia e Etnologia (MAE/USP) - São Paulo",
+                // Atualizando placeholders para as novas cores
+                imagem: "img/vasilhaCeramica.png", 
+            },
+            {
+                nome: "Ferramenta de Osso Polido",
+                cultura: "Hominídeos Primitivos",
+                local: "Garganta de Olduvai, Tanzânia (Simulação)",
+                data: "c. 3.3 Milhões de Anos",
+                descricao: "Réplica de ferramenta osteodôntica (usada para escavação/processamento), demonstrando o uso precoce de ossos para funções práticas.",
+                exposicao: "Museu Nacional - Rio de Janeiro (Seção Paleontológica)",
+                 // Atualizando placeholders para as novas cores
+                imagem: "img/ossoPolido.png", 
+            },
+            {
+                nome: "Machado de Mão de Quartizito",
+                cultura: "Pré-Histórica",
+                local: "Serra da Capivara, Piauí",
+                data: "c. 10.000 a.C.",
+                descricao: "Artefato lítico (pedra) lascado, possivelmente um machado bifacial utilizado para caça e processamento de alimentos, crucial na Era do Gelo.",
+                exposicao: "Museu do Homem Americano - Parque Nacional Serra da Capivara",
+                 // Atualizando placeholders para as novas cores
+                imagem: "img/machadoQuartizito.png", 
+            },
+        ];
+
+        // -----------------------
+        // FUNÇÕES DE LÓGICA GERAL
+        // -----------------------
+
+        // Função utilitária para retentar a requisição com backoff exponencial
+        async function fetchWithExponentialBackoff(fetcher, maxRetries = 5, delay = 1000) {
+            for (let attempt = 0; attempt < maxRetries; attempt++) {
+                try {
+                    return await fetcher();
+                } catch (error) {
+                    if (attempt === maxRetries - 1) {
+                        console.error("Máximo de tentativas de requisição atingido.", error);
+                        throw error;
+                    }
+                    // Implementação de Backoff Exponencial
+                    await new Promise(resolve => setTimeout(resolve, delay * (2 ** attempt)));
+                }
+            }
+        }
+
+        // Função para chamar a API do Gemini
+        async function callGeminiApi(userQuery) {
+            const systemPrompt = "Você é um assistente arqueológico de classe mundial chamado Arqueolab AI. Sua função é fornecer informações concisas, precisas e fundamentadas sobre a descoberta, preservação e classificação de artefatos arqueológicos no Brasil. Responda a perguntas, forneça guias de ação ou traduza termos, sempre com um tom informativo e encorajador. Limite a resposta a um parágrafo claro.";
+
+            const payload = {
+                contents: [{ parts: [{ text: userQuery }] }],
+                tools: [{ "google_search": {} }],
+                systemInstruction: {
+                    parts: [{ text: systemPrompt }]
+                },
+            };
+
+            const fetcher = async () => {
+                const response = await fetch(apiUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+                if (!response.ok) {
+                    throw new Error(`Erro HTTP: ${response.status}`);
+                }
+                return response;
+            };
+
+            try {
+                const response = await fetchWithExponentialBackoff(fetcher);
+                const result = await response.json();
+                const candidate = result.candidates?.[0];
+
+                let text = "Desculpe, não consegui gerar uma resposta agora. Tente novamente.";
+                let sources = [];
+
+                if (candidate && candidate.content?.parts?.[0]?.text) {
+                    text = candidate.content.parts[0].text;
+
+                    const groundingMetadata = candidate.groundingMetadata;
+                    if (groundingMetadata && groundingMetadata.groundingAttributions) {
+                        sources = groundingMetadata.groundingAttributions
+                            .map(attribution => ({
+                                uri: attribution.web?.uri,
+                                title: attribution.web?.title,
+                            }))
+                            .filter(source => source.uri && source.title);
+                    }
+                }
+                return { text, sources };
+            } catch (error) {
+                console.error("Erro na chamada da API Gemini:", error);
+                return { text: "Ocorreu um erro ao conectar-se com o assistente de IA. Verifique sua conexão ou tente novamente mais tarde.", sources: [] };
+            }
+        }
+
+        // Função principal para manipular a submissão do formulário da IA
+        async function handleAISubmit(event) {
+            event.preventDefault();
+
+            const inputElement = document.getElementById('ai-input');
+            const responseContainer = document.getElementById('ai-response');
+            const loadingIndicator = document.getElementById('ai-loading');
+            const userQuery = inputElement.value.trim();
+
+            if (!userQuery) return;
+
+            // Limpar resposta anterior e mostrar loading
+            responseContainer.innerHTML = '';
+            loadingIndicator.classList.remove('hidden');
+
+            const { text, sources } = await callGeminiApi(userQuery);
+
+            let sourcesHtml = '';
+            if (sources.length > 0) {
+                // Remove duplicatas e limita a 3 fontes
+                const uniqueSources = Array.from(new Map(sources.map(item => [item.uri, item])).values());
+                sourcesHtml = '<div class="mt-4 text-xs text-gray-600 border-t pt-2">';
+                sourcesHtml += '<p class="font-semibold">Fontes consultadas:</p>';
+                sourcesHtml += '<ul class="list-disc list-inside ml-4">';
+                uniqueSources.slice(0, 3).forEach(source => { 
+                    sourcesHtml += `<li><a href="${source.uri}" target="_blank" class="hover:text-gray-900 underline">${source.title}</a></li>`;
+                });
+                sourcesHtml += '</ul></div>';
+            }
+
+            responseContainer.innerHTML = `<p class="font-medium">${text}</p>${sourcesHtml}`;
+            loadingIndicator.classList.add('hidden');
+        }
+
+        // Função para alternar o conteúdo do Guia Rápido
+        function changeGuide(material) {
+            activeGuide = material;
+            renderGuide();
+        }
+
+        // Função para renderizar o conteúdo do Guia Rápido
+        function renderGuide() {
+            const container = document.getElementById('guide-content');
+            const buttons = document.querySelectorAll('.guide-button');
+
+            buttons.forEach(btn => {
+                btn.classList.remove('tab-active');
+                if (btn.dataset.material === activeGuide) {
+                    btn.classList.add('tab-active');
+                }
+            });
+
+            // Cores de Notificação para harmonizar com a nova paleta:
+            const warningBg = '#FAF8F5'; // Tom de background de FAQ
+            const warningText = '#8F4B2D'; // Terracota escuro
+            const successBg = '#E6F0F0'; // Teal muito claro
+            const successText = '#28595A'; // Verde-petróleo escuro
+            
+            let content = '';
+            if (activeGuide === 'cerâmica') {
+                content = `
+                    <h3 class="text-xl font-semibold mb-3" style="color: var(--color-text);">Cerâmica (Vasilhas, Fragmentos)</h3>
+                    <p class="mb-4" style="color: var(--color-text);">Artefatos de cerâmica são robustos, mas sensíveis a choques e limpeza inadequada. Eles fornecem informações cruciais sobre alimentação, rituais e tecnologia.</p>
+                    <div class="space-y-4">
+                        <div class="p-4 rounded-lg" style="background-color: ${warningBg};">
+                            <h4 class="font-bold text-lg flex items-center mb-1" style="color: ${warningText};"><i data-lucide="alert-triangle" class="w-5 h-5 mr-2"></i>Ações Imediatas (O que NÃO fazer)</h4>
+                            <ul class="list-disc list-inside ml-2" style="color: var(--color-text);">
+                                <li><strong>Não use água ou esfregue:</strong> A sujeira aderida pode conter microvestígios importantes. A limpeza deve ser mínima e a seco.</li>
+                                <li><strong>Não tente juntar fragmentos:</strong> O uso de colas ou adesivos domésticos pode danificar permanentemente o material.</li>
+                            </ul>
+                        </div>
+                        <div class="p-4 rounded-lg" style="background-color: ${successBg};">
+                            <h4 class="font-bold text-lg flex items-center mb-1" style="color: ${successText};"><i data-lucide="check-circle" class="w-5 h-5 mr-2"></i>Ações Recomendadas</h4>
+                            <ul class="list-disc list-inside ml-2" style="color: var(--color-text);">
+                                <li><strong>Limpeza a seco:</strong> Use um pincel de cerdas macias para remover apenas a poeira superficial.</li>
+                                <li><strong>Embalagem:</strong> Envolva cuidadosamente cada fragmento em papel de seda ou plástico bolha e guarde em uma caixa resistente, garantindo que não haja movimento interno.</li>
+                                <li><strong>Documentação:</strong> Fotografe o local exato da descoberta e anote a profundidade e a localização.</li>
+                            </ul>
+                        </div>
+                    </div>
+                `;
+            } else if (activeGuide === 'osso') {
+                content = `
+                    <h3 class="text-xl font-semibold mb-3" style="color: var(--color-text);">Osso (Ferramentas, Restos Esqueléticos)</h3>
+                    <p class="mb-4" style="color: var(--color-text);">Artefatos de osso são extremamente frágeis devido à perda da fração proteica (colágeno) ao longo do tempo.</p>
+                    <div class="space-y-4">
+                        <div class="p-4 rounded-lg" style="background-color: ${warningBg};">
+                            <h4 class="font-bold text-lg flex items-center mb-1" style="color: ${warningText};"><i data-lucide="alert-triangle" class="w-5 h-5 mr-2"></i>Ações Imediatas (O que NÃO fazer)</h4>
+                            <ul class="list-disc list-inside ml-2" style="color: var(--color-text);">
+                                <li><strong>Não limpe com água ou produtos químicos:</strong> A porosidade absorve líquidos, fragilizando o osso e removendo dados cruciais.</li>
+                                <li><strong>Não utilize métodos de branqueamento (água oxigenada, etc.):</strong> Pode corroer e danificar o artefato.</li>
+                                <li><strong>Não aplique selantes ou vernizes:</strong> Dificultam análises futuras e causam danos a longo prazo.</li>
+                            </ul>
+                        </div>
+                        <div class="p-4 rounded-lg" style="background-color: ${successBg};">
+                            <h4 class="font-bold text-lg flex items-center mb-1" style="color: ${successText};"><i data-lucide="check-circle" class="w-5 h-5 mr-2"></i>Cuidados e Ações Recomendadas</h4>
+                            <ul class="list-disc list-inside ml-2" style="color: var(--color-text);">
+                                <li><strong>Manuseio mínimo:</strong> Toque com as mãos limpas (preferencialmente com luvas) e o mínimo possível.</li>
+                                <li><strong>Controle climático:</strong> Armazene em local seco, evitando mudanças bruscas de temperatura e exposição solar direta.</li>
+                                <li><strong>Embalagem temporária:</strong> Use caixa inerte (papelão de arquivo) com acolchoamento macio e inerte para evitar movimento.</li>
+                                <li><strong>Contato com especialistas:</strong> Entre em contato imediatamente com o IPHAN.</li>
+                            </ul>
+                        </div>
+                    </div>
+                `;
+            } else if (activeGuide === 'couro') {
+                content = `
+                    <h3 class="text-xl font-semibold mb-3" style="color: var(--color-text);">Couro/Orgânico (Vestimentas, Bolsas, etc.)</h3>
+                    <p class="mb-4" style="color: var(--color-text);">Artefatos orgânicos são extremamente vulneráveis à umidade e ao mofo, exigindo controle climático rigoroso.</p>
+                    <div class="space-y-4">
+                        <div class="p-4 rounded-lg" style="background-color: ${warningBg};">
+                            <h4 class="font-bold text-lg flex items-center mb-1" style="color: ${warningText};"><i data-lucide="alert-triangle" class="w-5 h-5 mr-2"></i>Ações Imediatas (O que NÃO fazer)</h4>
+                            <ul class="list-disc list-inside ml-2" style="color: var(--color-text);">
+                                <li><strong>Não tente limpar ou restaurar:</strong> Produtos domésticos ou óleos podem causar danos irreversíveis.</li>
+                                <li><strong>Não guarde em plástico fechado:</strong> Isso retém a umidade e impede a "respiração" do material, causando mofo.</li>
+                                <li><strong>Evite dobras:</strong> Armazene o mais plano possível para evitar marcas permanentes ou quebras.</li>
+                            </ul>
+                        </div>
+                        <div class="p-4 rounded-lg" style="background-color: ${successBg};">
+                            <h4 class="font-bold text-lg flex items-center mb-1" style="color: ${successText};"><i data-lucide="check-circle" class="w-5 h-5 mr-2"></i>Cuidados e Ações Recomendadas</h4>
+                            <ul class="list-disc list-inside ml-2" style="color: var(--color-text);">
+                                <li><strong>Controle de Umidade:</strong> Evite variações bruscas. Mantenha em ambiente seco (ideal: 40% a 60% de umidade relativa).</li>
+                                <li><strong>Armazenamento Adequado:</strong> Use caixas de papelão de arquivo (sem ácido) ou envolva em tecido de algodão/TNT.</li>
+                                <li><strong>Evite a Luz Direta:</strong> Mantenha longe da luz solar e luzes intensas, que causam desbotamento e fragilização.</li>
+                                <li><strong>Arejamento:</strong> Se o clima for seco, retire para arejar periodicamente em local sombreado.</li>
+                            </ul>
+                        </div>
+                    </div>
+                `;
+            }
+
+            container.innerHTML = content;
+            lucide.createIcons(); // Recriar ícones após a renderização do conteúdo
+        }
+
+        // Função para renderizar os cartões do Catálogo
+        function renderCatalog() {
+            const catalogContainer = document.getElementById('catalog-container');
+            catalogContainer.innerHTML = ''; // Limpa o container
+
+            catalogItems.forEach(item => {
+                const card = document.createElement('div');
+                card.className = 'bg-white p-6 rounded-xl shadow-lg border-t-4 transition duration-300 hover:shadow-xl';
+                card.style.borderTopColor = 'var(--color-primary)';
+                card.innerHTML = `
+                    <div class="flex items-start space-x-4">
+                        <img src="${item.imagem}" 
+                            alt="${item.nome}" 
+                            class="w-16 h-16 rounded-lg object-cover flex-shrink-0"
+                            onerror="this.onerror=null; this.src='https://placehold.co/64x64/376E6F/ffffff?text=Item';"
+                        >
+                        <div>
+                            <h3 class="text-xl font-bold" style="color: var(--color-primary);">${item.nome}</h3>
+                            <p class="text-sm text-gray-500">${item.cultura} (${item.data})</p>
+                        </div>
+                    </div>
+                    <p class="mt-4 text-sm" style="color: var(--color-text);">${item.descricao}</p>
+                    <div class="mt-3 pt-3 border-t border-gray-100 text-xs">
+                        <p class="font-semibold" style="color: var(--color-secondary);">Local de Exposição:</p>
+                        <p class="text-gray-600">${item.exposicao}</p>
+                    </div>
+                `;
+                catalogContainer.appendChild(card);
+            });
+        }
+
+        // -----------------------
+        // INICIALIZAÇÃO
+        // -----------------------
+        document.addEventListener('DOMContentLoaded', () => {
+            // Inicializa ícones Lucide
+            lucide.createIcons(); 
+
+            // Configura o primeiro guia como ativo e o renderiza
+            const initialButton = document.querySelector('.guide-button[data-material="cerâmica"]');
+            if (initialButton) {
+                initialButton.classList.add('tab-active');
+                renderGuide();
+            }
+
+            // Adiciona listeners para os botões do Guia Rápido
+            document.querySelectorAll('.guide-button').forEach(button => {
+                button.addEventListener('click', () => {
+                    changeGuide(button.dataset.material);
+                });
+            });
+
+            // Adiciona listener para o formulário da IA
+            const aiForm = document.getElementById('ai-form');
+            if (aiForm) {
+                aiForm.addEventListener('submit', handleAISubmit);
+            }
+
+            // Renderiza o Catálogo
+            renderCatalog();
+        });
+
+    </script>
+</body>
+</html>
